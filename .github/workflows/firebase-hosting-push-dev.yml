@@ -1,0 +1,63 @@
+name: Deploy to Firebase Hosting on push to dev
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - assets/**
+      - seo/**
+      - config/**
+      - fonts/**
+      - imgs/**
+      - lib/**
+      - web/**
+      - .firebaserc
+      - .metadata
+      - cors.json
+      - firebase.json
+      - firestore.indexes.json
+      - firestore.rules
+      - pubspec.lock
+      - pubspec.yaml
+      - storage.rules
+      - .github/workflows/firebase-hosting-push-dev.yml
+
+jobs:
+  build_and_deploy_web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install and configure flutter
+        run: |
+          sudo snap install flutter --classic
+          flutter config --enable-web
+
+      - name: Prepare dev configuration
+        run: cp config/dev.json config/__config__.json
+
+      - name: Build flameoapp web
+        run: flutter build web --release -t lib/main.dart
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLAMEOAPP_PYME }}'
+          channelId: live
+          target: dev
+          projectId: flameoapp-pyme
+
+      - name: Prepare dev art configuration
+        run: cp config/devart.json config/__config__.json
+
+      - name: Build flameoart web
+        run: flutter build web --release -t lib/main.dart
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLAMEOAPP_PYME }}'
+          channelId: live
+          target: devart
+          projectId: flameoapp-pyme

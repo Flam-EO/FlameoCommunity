@@ -1,0 +1,113 @@
+name: Deploy the google cloud functions on push to main
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/functions/*/**
+      - '!backend/functions/newCompaniesWatchDog/**'
+      - '!backend/functions/statsNotifier/**'
+
+jobs:
+  deploy_functions:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Google auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: '${{ secrets.WIF_LOCATION }}'
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}@flameoapp-pyme.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: flameoapp-pyme
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+
+      - name: paths-filter
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            connectedAccountgen:
+              - backend/functions/connectedAccountgen/**
+            companyMonitor:
+              - backend/functions/companyMonitor/**
+            connectedAccountWebhooks:
+              - backend/functions/connectedAccountWebhooks/**
+            notifier:
+              - backend/functions/notifier/**
+            stripeCheckoutSession:
+              - backend/functions/stripeCheckoutSession/**
+            stripeWebHookHandler:
+              - backend/functions/stripeWebHookHandler/**
+
+      - name: Deploy connectedAccountgen
+        continue-on-error: true
+        if: steps.changes.outputs.connectedAccountgen == 'true'
+        run: |
+          cd backend/functions/connectedAccountgen
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy connectedAccountgen --runtime python311 --trigger-event providers/cloud.firestore/eventTypes/document.write --trigger-resource "projects/flameoapp-pyme/databases/(default)/documents/connectedAccounts/{companyID}" --project flameoapp-pyme --region europe-central2 --entry-point hello_firestore --env-vars-file .env.yaml
+
+      - name: Deploy companyMonitor
+        continue-on-error: true
+        if: steps.changes.outputs.companyMonitor == 'true'
+        run: |
+          cd backend/functions/companyMonitor
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy companyMonitor --runtime python311 --trigger-event providers/cloud.firestore/eventTypes/document.update --trigger-resource "projects/flameoapp-pyme/databases/(default)/documents/companies/{companyID}" --project flameoapp-pyme --region europe-central2 --entry-point handle_update --env-vars-file .env.yaml
+
+      - name: Deploy connectedAccountWebhooks
+        continue-on-error: true
+        if: steps.changes.outputs.connectedAccountWebhooks == 'true'
+        run: |
+          cd backend/functions/connectedAccountWebhooks
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy connectedAccountWebhooks --runtime python310 --trigger-http --project flameoapp-pyme --region europe-central2 --entry-point handle_webhook --env-vars-file .env.yaml
+
+      - name: Deploy notifier
+        continue-on-error: true
+        if: steps.changes.outputs.notifier == 'true'
+        run: |
+          cd backend/functions/notifier
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy notifier --runtime python311 --trigger-event providers/cloud.firestore/eventTypes/document.create --trigger-resource "projects/flameoapp-pyme/databases/(default)/documents/companies/{companyID}/notifications/{notificationID}" --project flameoapp-pyme --region europe-central2 --entry-point handle_notification --env-vars-file .env.yaml
+  
+      - name: Deploy stripeCheckoutSession
+        continue-on-error: true
+        if: steps.changes.outputs.stripeCheckoutSession == 'true'
+        run: |
+          cd backend/functions/stripeCheckoutSession
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy stripeCheckoutSession --runtime python311 --trigger-event providers/cloud.firestore/eventTypes/document.create --trigger-resource "projects/flameoapp-pyme/databases/(default)/documents/stripeCustomers/{customerID}/checkout_sessions/{checkoutID}" --project flameoapp-pyme --region europe-central2 --entry-point checkout_creator --env-vars-file .env.yaml
+
+      - name: Deploy stripeWebHookHandler
+        continue-on-error: true
+        if: steps.changes.outputs.stripeWebHookHandler == 'true'
+        run: |
+          cd backend/functions/stripeWebHookHandler
+          pip install -r requirements.txt
+          find . -type f -name "*.py" | xargs pylint
+          gcloud functions deploy stripeWebHookHandler --runtime python310 --trigger-http --project flameoapp-pyme --region europe-central2 --entry-point handle_webhook --env-vars-file .env.yaml

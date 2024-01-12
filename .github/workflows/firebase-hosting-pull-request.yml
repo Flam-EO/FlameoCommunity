@@ -1,0 +1,53 @@
+name: Deploy to Firebase Hosting stg on PR to main
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - assets/**
+      - seo/**
+      - config/**
+      - fonts/**
+      - imgs/**
+      - lib/**
+      - .firebaserc
+      - .metadata
+      - cors.json
+      - firebase.json
+      - firestore.indexes.json
+      - firestore.rules
+      - pubspec.lock
+      - pubspec.yaml
+      - storage.rules
+
+permissions: write-all
+
+jobs:
+  build_and_deploy_web:
+    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install and configure flutter
+        run: |
+          sudo snap install flutter --classic
+          flutter config --enable-web
+        
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Prepare test configuration
+        run: cp config/test.json config/__config__.json
+
+      - name: Build web
+        run: flutter build web --release -t lib/main.dart
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FLAMEOAPP_PYME }}'
+          channelId: live
+          target: stg
+          projectId: flameoapp-pyme

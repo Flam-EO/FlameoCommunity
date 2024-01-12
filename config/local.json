@@ -1,0 +1,15 @@
+{
+    "companies": "test_companies",
+    "products": "test_products",
+    "registrationCodes": "test_registrationCodes",
+    "users": "test_users",
+    "stripeCustomers": "test_stripeCustomers",
+    "logs": "test_logs",
+    "contact": "test_contact",
+    "connectedAccounts": "test_connectedAccounts",
+    "base_link": "localhost:52147",
+    "app_link": "localhost:52147",
+    "art_link": "localhost:52147",
+    "logging": false,
+    "environment": "local"
+}

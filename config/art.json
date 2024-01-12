@@ -1,0 +1,15 @@
+{
+    "companies": "companies",
+    "products": "Products",
+    "registrationCodes": "registrationCodes",
+    "users": "users",
+    "stripeCustomers": "stripeCustomers",
+    "logs": "logs",
+    "contact": "contact",
+    "connectedAccounts": "connectedAccounts",
+    "base_link": "flameoart.com",
+    "app_link": "flameoapp.com",
+    "art_link": "flameoart.com",
+    "logging": true,
+    "environment": "art"
+}

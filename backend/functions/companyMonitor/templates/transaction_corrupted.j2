@@ -1,0 +1,46 @@
+TRANSACCIÓN CORRUPTA REALIZADA EN {{ company_name }}.<br><br>
+
+Total según la transacción: {{ transaction_total }}<br>
+Total según Stripe: {{ stripe_total }}
+
+Fecha de la compra: {{ timestamp }}.<br>
+
+Desglose: <br>
+<table style="width: 100%; border-collapse: collapse;">
+    <tr><th>Nombre</th><th>Unidades</th><th>Precio por unidad</th><th>Precio total</th></tr>
+
+    {% for item in cart_items %}
+        {% set product_id = item.product_id %}
+        {% set image_link = get_firebase_storage_download_link(
+            'flameoapp-pyme.appspot.com',
+            'Companies/' + company_id + '/products/' + product_id + '/thumbnails/' + item.photos[0]
+        ) %}
+        <tr>
+            <td>
+                <a href="https://{{ subdomain }}flameoapp.com/panel?name={{ panel_link }}&product={{ product_id }}">
+                    <img src="{{ image_link }}" style="max-width: 1cm; width: 100%;">
+                </a> {{ item.name }}
+            </td>
+            <td>{{ item.quantity }} {{ item.measure }}</td>
+            <td>{{ item.price }}€</td>
+            <td>{{ item.price * item.quantity }}€</td>
+        </tr>
+        <tr><td colspan="4" style="border-bottom: 1px solid #ccc;"></td></tr>
+    {% endfor %}
+
+    <tr><td colspan="4" style="border-bottom: 2px solid #000;"></td></tr>
+    <tr>
+        <td colspan="3" align="right"><strong>Total:</strong></td>
+        <td>{{ total_price }}€</td>
+    </tr>
+</table><br>
+
+{% if pick_up %}
+    Recogida en tienda.
+{% else %}
+    Dirección de entrega:<br>
+    {{ address.to_html() }}
+{% endif %} <br><br>
+
+Atentamente,<br>
+FlameoBot

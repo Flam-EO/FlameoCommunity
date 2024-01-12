@@ -1,0 +1,15 @@
+{
+    "companies": "test_companies",
+    "products": "test_products",
+    "registrationCodes": "test_registrationCodes",
+    "users": "test_users",
+    "stripeCustomers": "test_stripeCustomers",
+    "logs": "test_logs",
+    "contact": "test_contact",
+    "connectedAccounts": "test_connectedAccounts",
+    "base_link": "dev.flameoapp.com",
+    "app_link": "dev.flameoapp.com",
+    "art_link": "dev.flameoart.com",
+    "logging": false,
+    "environment": "dev"
+}

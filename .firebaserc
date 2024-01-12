@@ -1,0 +1,27 @@
+{
+  "projects": {
+    "default": "flameoapp-pyme"
+  },
+  "targets": {
+    "flameoapp-pyme": {
+      "hosting": {
+        "prod": [
+          "flameoapp-pyme"
+        ],
+        "stg": [
+          "flameoapp-pyme-stg"
+        ],
+        "dev": [
+          "flameoapp-pyme-dev"
+        ],
+        "art": [
+          "flameoapp-pyme-art"
+        ],
+        "devart": [
+          "flameoapp-pyme-art-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
