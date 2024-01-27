@@ -61,3 +61,4 @@ backend/firebase_scripts/status.json
 backend/firebase_scripts/credentials.yaml
 *.env.*
 backend/functions/actions_gcloud.metadata
+.vscode/
