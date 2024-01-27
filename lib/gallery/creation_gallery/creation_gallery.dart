@@ -32,7 +32,7 @@ class _CreationGalleryState extends State<CreationGallery> {
   void reorderGalleryCreations(GalleryCreationsOrder criteria, List<UserProduct>? galleryProducts) {
     switch (criteria) {
       case GalleryCreationsOrder.relevance:
-        galleryProducts?.sort((a, b) => a.galleryPunctuation!.compareTo(b.galleryPunctuation!));
+        galleryProducts?.sort((b, a) => a.galleryPunctuation!.compareTo(b.galleryPunctuation!));
         break;
       case GalleryCreationsOrder.priceAscending:
         galleryProducts?.sort((a, b) => a.price.compareTo(b.price));

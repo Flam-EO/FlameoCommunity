@@ -120,7 +120,7 @@ Future<Uint8List?> resizeImage(Uint8List? imageData, int width) async {
 }
 
 // Function to open a url
-Future<void> openUrl(Uri url, Logger? logger, [String target='_blank']) async {
+Future<void> openUrl(Uri url, [Logger? logger, String target='_blank']) async {
   if (!await launchUrl(url, webOnlyWindowName: target)) {
     if (logger!= null){
        logger.warning('The URL link could not be loaded.');
@@ -425,4 +425,20 @@ enum GalleryCreationsOrder {
   priceDescending,
   newer,
   older
+}
+
+/// Checks if a URL has subdomain
+bool hasSubdomain(String url) {
+  Uri uri = Uri.parse(url);
+  List<String> parts = uri.host.split('.');
+  return parts.length > 2 && parts[0] != 'www';
+}
+
+/// Searches the location given by the address in google maps
+void findOnMaps(String? address, [Logger? logger]) {
+  var encodedAddress = Uri.encodeComponent(address ?? '');
+  if (encodedAddress != '') {
+    final Uri url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$encodedAddress');
+    openUrl(url, logger);
+  }
 }
