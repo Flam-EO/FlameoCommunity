@@ -74,7 +74,7 @@ class DatabaseService {
       if (!(data['is_deleted'] ?? false) || (includeDeleting && (data['deletion_date'] as Timestamp).seconds > Timestamp.now().seconds)) {
         if (data['panelLink'] != null) {
           String panelLink = (data['panelLink'] as String).toLowerCase();
-          if (removeDiacritics(panelLink) == removeDiacritics(link.toLowerCase())) {
+          if (nonCsEqual(panelLink, link)) {
             return data['panelLink'] as String;
           }
         }

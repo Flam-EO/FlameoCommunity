@@ -32,7 +32,7 @@ class _DangerZoneState extends State<DangerZone> {
 
   void checkLink(String tempLink) async {
     widget.config.log(LoggerAction.linkChangeTry, {'link': tempLink});
-    if (removeDiacritics(tempLink.toLowerCase()) == removeDiacritics(currentLink.toLowerCase())) {
+    if (nonCsEqual(tempLink, currentLink)) {
       setState(() {
         verified = null;
         loading = false;

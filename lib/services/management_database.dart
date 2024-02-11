@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:flameo/models/client_user.dart';
 import 'package:flameo/services/config_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 

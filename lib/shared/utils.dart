@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flameo/models/cart_models/cart.dart';
 import 'package:flameo/models/transaction.dart';
 import 'package:flameo/models/userproduct.dart';
@@ -441,4 +442,19 @@ void findOnMaps(String? address, [Logger? logger]) {
     final Uri url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$encodedAddress');
     openUrl(url, logger);
   }
+}
+
+/// Compares two strings given as arguments in a non case-sensitive way and without considering 
+/// diacritics and returns true if they are equal
+bool nonCsEqual(String string1, String string2)
+{
+  return removeDiacritics(string1.toLowerCase()) == removeDiacritics(string2.toLowerCase());
+}
+
+/// Returns true for an input string that is contained in the stringToSearch. False otherwise
+bool searchString(String? input, String? stringToSearch)
+{
+  if (input == null ||  stringToSearch == null) return false;
+  return removeDiacritics(stringToSearch.toLowerCase()).contains(
+      removeDiacritics(input.toLowerCase()));
 }

@@ -44,16 +44,9 @@ class _ExternalPanelDashboardState extends State<ExternalPanelDashboard> {
   FocusNode searchfieldFocusNode = FocusNode();
   TextEditingController searchController = TextEditingController(text: '');
 
-  //################################################################################################
+  // -----------------------------------------------------------------------------------------------
   //  Helper methods
-  //################################################################################################
-
-  bool searchFilter(String? productContent) {
-    if (productContent == null) return false;
-    return removeDiacritics(productContent.toLowerCase()).contains(
-      removeDiacritics(searchController.text.toLowerCase())
-    );
-  }
+  // -----------------------------------------------------------------------------------------------
 
   Future<void> switchProduct(UserProduct? newProduct, [bool previous = false]) async {
     if (!mounted) return;
@@ -123,7 +116,8 @@ class _ExternalPanelDashboardState extends State<ExternalPanelDashboard> {
   }
 
   List<UserProduct>? filterProducts(List<UserProduct>? products, String? selectedCategory) {
-    products = products?.where((element) => searchFilter(element.name) || searchFilter(element.description)).toList();
+    products = products?.where((element) => searchString(searchController.text, element.name) || 
+        searchString(searchController.text ,element.description)).toList();
     if (products != null) products = sortProducts(products);
     if (selectedCategory == null || selectedCategory == 'Todo') return products;
     return products?.where((element) => element.category == selectedCategory).toList();
