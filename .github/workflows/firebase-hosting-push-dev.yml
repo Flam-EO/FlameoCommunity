@@ -33,6 +33,17 @@ jobs:
         run: |
           sudo snap install flutter --classic
           flutter config --enable-web
+        
+      - name: Generate firebase_options.dart
+        run: |
+          sed -e "s/%%FIREBASE_API_KEY%%/${{ secrets.FIREBASE_API_KEY }}/" \
+          -e "s/%%FIREBASE_APP_ID%%/${{ secrets.FIREBASE_APP_ID }}/" \
+          -e "s/%%FIREBASE_MESS_SENDER_ID%%/${{ secrets.FIREBASE_MESS_SENDER_ID }}/" \
+          -e "s/%%FIREBASE_PROJECT_ID%%/${{ secrets.FIREBASE_PROJECT_ID }}/" \
+          -e "s/%%FIREBASE_AUTH_DOMAIN%%/${{ secrets.FIREBASE_AUTH_DOMAIN }}/" \
+          -e "s/%%FIREBASE_STORAGE_BUCKET%%/${{ secrets.FIREBASE_STORAGE_BUCKET }}/" \
+          -e "s/%%FIREBASE_MEASUREMENT_ID%%/${{ secrets.FIREBASE_MEASUREMENT_ID }}/" \
+          firebase_options.dart.template > lib/firebase_options.dart
 
       - name: Prepare dev configuration
         run: cp config/dev.json config/__config__.json
