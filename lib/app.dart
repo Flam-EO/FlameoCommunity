@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
   static List<String> reservedSubdomains = ['dev', 'stg', 'gallery', 'galeria'];
 
   dynamic checkSubdomain([RouteSettings? settings]) {
+    // dummy comment
     String fullUrl = html.window.location.href;
     Uri fullUrlParsed = Uri.parse(fullUrl);
     List<String> parts = fullUrlParsed.host.split('.');
