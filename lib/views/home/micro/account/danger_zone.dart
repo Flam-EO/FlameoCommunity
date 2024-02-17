@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diacritic/diacritic.dart';
 import 'package:flameo/models/client_user.dart';
 import 'package:flameo/services/auth.dart';
 import 'package:flameo/services/config_provider.dart';

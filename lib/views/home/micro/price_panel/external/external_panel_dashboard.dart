@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'package:diacritic/diacritic.dart';
 import 'package:flameo/models/cart_models/cart.dart';
 import 'package:flameo/models/client_user.dart';
 import 'package:flameo/models/userproduct.dart';
