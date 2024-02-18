@@ -19,7 +19,7 @@ on:
       - pubspec.lock
       - pubspec.yaml
       - storage.rules
-
+      - .github/workflows/firebase-hosting-pull-request.yml
 permissions: write-all
 
 jobs:
@@ -28,13 +28,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install and configure flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+          channel: 'stable'
+      - run: flutter --version
+
+      - name: Generate firebase_options.dart
         run: |
-          sudo snap install flutter --classic
-          flutter config --enable-web
-        
+          sed -e "s/%%FIREBASE_API_KEY%%/${{ secrets.FIREBASE_API_KEY }}/" \
+          -e "s/%%FIREBASE_APP_ID%%/${{ secrets.FIREBASE_APP_ID }}/" \
+          -e "s/%%FIREBASE_MESS_SENDER_ID%%/${{ secrets.FIREBASE_MESS_SENDER_ID }}/" \
+          -e "s/%%FIREBASE_PROJECT_ID%%/${{ secrets.FIREBASE_PROJECT_ID }}/" \
+          -e "s/%%FIREBASE_AUTH_DOMAIN%%/${{ secrets.FIREBASE_AUTH_DOMAIN }}/" \
+          -e "s/%%FIREBASE_STORAGE_BUCKET%%/${{ secrets.FIREBASE_STORAGE_BUCKET }}/" \
+          -e "s/%%FIREBASE_MEASUREMENT_ID%%/${{ secrets.FIREBASE_MEASUREMENT_ID }}/" \
+          firebase_options.dart.template > lib/firebase_options.dart
+
       - name: Analyze project
         run: flutter analyze
 
